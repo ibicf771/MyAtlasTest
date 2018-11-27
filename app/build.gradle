@@ -1,5 +1,5 @@
 group = 'com.taobao.android.atlasdemo'
-version = getEnvValue("versionName", "1.0.0");
+version = getEnvValue("versionName", "1.0.1");
 def apVersion = getEnvValue("apVersion", "");
 
 apply plugin: 'com.android.application'
@@ -8,10 +8,10 @@ apply plugin: 'com.taobao.atlas'
 apply from: 'dexPatchWraper.gradle'
 
 //通过增加判断逻辑，打出不同类型的定制包
-def appId = "com.taobao.demo"
+def appId = "com.unit.test.myatlastest"
 def minVersion = 14
 if (project.hasProperty("beta")) {
-    appId = "com.taobao.atlas.beta"
+    appId = "com.unit.test.myatlastest.beta"
     minVersion = 21
 }
 
@@ -48,18 +48,18 @@ android {
         multiDexEnabled = false
 
     }
-    flavorDimensions 'api'
-    productFlavors{
-        productA{
-            applicationId "com.crazyman.product.a"
-            versionName "version-a-1.0"
-        }
-
-        productB{
-            applicationId "com.crazyman.product.b"
-            versionName "version-b-1.0"
-        }
-    }
+//    flavorDimensions 'api'
+//    productFlavors{
+//        productA{
+//            applicationId "com.crazyman.product.a"
+//            versionName "version-a-1.0"
+//        }
+//
+//        productB{
+//            applicationId "com.crazyman.product.b"
+//            versionName "version-b-1.0"
+//        }
+//    }
 
     dataBinding {
         enabled = true
@@ -90,12 +90,12 @@ atlas {
     instantAppEnabled true
     atlasEnabled true
     tBuildConfig {
-        autoStartBundles = ['com.taobao.firstbundle'] //自启动bundle配置
-        outOfApkBundles = ['remotebundle']
+        autoStartBundles = ['com.unit.test.firstbundle.firstbundle'] //自启动bundle配置
+//        outOfApkBundles = ['remotebundle']
         preLaunch = 'com.unit.test.myatlastest.DemoPreLaunch'
         classInject false
         aaptConstantId true
-        dataBindingBundles = ['com.taobao.databindbundle']
+//        dataBindingBundles = ['com.taobao.databindbundle']
     }
 
     manifestOptions {

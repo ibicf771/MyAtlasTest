@@ -1,44 +1,3 @@
-//apply plugin: 'com.android.library'
-//apply plugin: 'com.taobao.atlas'
-//atlas {
-//    bundleConfig{
-//        awbBundle true
-//    }
-//    buildTypes {
-//        debug {
-//            baseApFile project.rootProject.file('app/build/outputs/apk/app-debug.ap')
-//        }
-//    }
-//}
-////只添加上面的配置就行了,下面的是默认生成的
-//android {
-//    compileSdkVersion 25
-//    buildToolsVersion "25.0.2"
-//    defaultConfig {
-//        minSdkVersion 15
-//        targetSdkVersion 25
-//        versionCode 1
-//        versionName "1.0"
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-//    }
-//    buildTypes {
-//        release {
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//        }
-//    }
-//}
-//dependencies {
-//    compile fileTree(include: ['*.jar'], dir: 'libs')
-//    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-//        exclude group: 'com.android.support', module: 'support-annotations'
-//    })
-//    compile 'com.android.support:appcompat-v7:25.3.1'
-//    testCompile 'junit:junit:4.12'
-////依赖lib中间bundle
-////    compile project(':librarybundle')
-//}
-
 apply plugin: 'com.android.library'
 apply plugin: 'com.taobao.atlas'
 
@@ -53,16 +12,15 @@ atlas {
     }
 }
 group = 'com.atlas.demo'
-version = '1.0.0'
+version = '1.0.1'
 
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '26.0.2'
-
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0.0"
 
@@ -86,8 +44,8 @@ dependencies {
 //    providedCompile project(':publicbundle')
 
     compile 'com.android.support.constraint:constraint-layout:1.0.0'
-    providedCompile 'com.android.support:support-v4:25.1.0'
-    providedCompile 'com.android.support:appcompat-v7:25.1.0'
+    providedCompile 'com.android.support:support-v4:26.1.0'
+    providedCompile 'com.android.support:appcompat-v7:26.1.0'
     providedCompile rootProject.ext.lib_atlas_core
     providedCompile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
     compile project(":secondbundlelibrary");
