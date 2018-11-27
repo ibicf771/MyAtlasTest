@@ -4,6 +4,16 @@
 //
 //apply plugin: 'com.android.application'
 //apply plugin: 'com.taobao.atlas'
+//apply plugin: 'com.taobao.atlas.dexpatch'
+//apply from: 'dexPatchWraper.gradle'
+//
+////通过增加判断逻辑，打出不同类型的定制包
+//def appId = "com.unit.test.myatlastest"
+//def minVersion = 14
+//if (project.hasProperty("beta")) {
+//    appId = "com.taobao.atlas.beta"
+//    minVersion = 21
+//}
 //
 //repositories {
 //    mavenLocal()
@@ -11,23 +21,46 @@
 //}
 //
 //android {
-//    compileSdkVersion 25
-//    buildToolsVersion "25.0.3"
+//    compileSdkVersion 26
+//    buildToolsVersion '26.0.0'
 //    defaultConfig {
-//        applicationId "com.unit.test.myatlastest"
-//
-//        minSdkVersion 15
-//        targetSdkVersion 25
+//        applicationId appId
+//        minSdkVersion minVersion
+//        targetSdkVersion 26
 //        versionCode 1
 //        versionName version
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-//    }
-//    buildTypes {
-//        release {
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//        vectorDrawables.useSupportLibrary = true
+//        //通过增加判断逻辑，打出不同类型的定制包
+//        if (project.hasProperty("beta")) {
+//            buildConfigField "boolean", "API_ENV", "false"
+//        }else{
+//            buildConfigField "boolean", "API_ENV", "false"
 //        }
 //    }
+//
+//    dataBinding {
+//        enabled = true
+//    }
+//
+//
+//    buildTypes {
+//        release {
+//            minifyEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//        }
+//        debug {
+//            ndk {
+//                abiFilters "x86","armeabi"
+//            }
+//
+//        }
+//    }
+//
+//    packagingOptions {
+//        doNotStrip '*/mips/*.so'
+//        doNotStrip '*/mips64/*.so'
+//    }
+//
 //}
 //
 //atlas {
@@ -35,10 +68,13 @@
 //    atlasEnabled true
 //    tBuildConfig {
 //        autoStartBundles = ['com.taobao.firstbundle'] //自启动bundle配置
-//        outOfApkBundles = ['remotebundle'] //配置远程的bundle
+//        outOfApkBundles = ['remotebundle']
+//        preLaunch = 'com.unit.test.myatlastest.DemoPreLaunch'
+//        classInject false
+//        dataBindingBundles = ['com.taobao.databindbundle']
 //    }
 //
-//    manifestOptions{
+//    manifestOptions {
 //        addAtlasProxyComponents true
 //    }
 //
@@ -60,29 +96,40 @@
 //    }
 //}
 //
+//
 //dependencies {
 //    compile fileTree(include: ['*.jar'], dir: 'libs')
-//    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-//        exclude group: 'com.android.support', module: 'support-annotations'
-//    })
-//    compile 'com.android.support:appcompat-v7:25.3.1'
-//    testCompile 'junit:junit:4.12'
-//    //    compile project(':activitygroupcompat')
-//    //    compile project(':firstbundle')
-//    //    compile project(':middlewarelibrary')
-//    compile('com.taobao.android:atlas_core:5.0.6-rc52@aar') {
+////    compile(rootProject.ext.lib_atlas_core) {
+////
+////        transitive = true
+////    }
+////    compile rootProject.ext.lib_atlas_update
+//
+//    compile('com.taobao.android:atlas_core:5.0.8.1-rc1@aar') {
 //
 //        transitive = true
 //    }
-//    compile 'com.taobao.android:atlasupdate:1.1.4.7@aar'
-//    compile 'com.alibaba:fastjson:1.1.45.android@jar'
-////        bundleCompile project(':firstbundle')
-//    //    bundleCompile project(':remotebundle')
-//    //    compile project(':activitygroupcompat')
-//    //    compile project(':middlewarelibrary')
-////    compile project(':firstbundle')
-//}
+//    compile 'com.taobao.android:atlasupdate:1.1.4.11@aar'
 //
+//    //    compile project(':middlewarelibrary')
+//    //    compile project(':splashscreen')
+//    //    compile project(':activitygroupcompat')
+//    //    bundleCompile project(':secondbundle')
+//    //    bundleCompile project(':remotebundle')
+//    //    bundleCompile project(':publicbundle')
+//    //    bundleCompile project(':databindbundle')
+//    compile 'com.android.support:appcompat-v7:26.1.0'
+//    compile 'com.android.support:design:26.1.0'
+//    compile 'com.android.support:support-vector-drawable:26.1.0'
+//    compile 'com.android.support:support-v4:26.1.0'
+//    compile 'com.alibaba:fastjson:1.1.45.android@jar'
+//    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
+//    compile 'com.android.support:recyclerview-v7:26.1.0'
+//    //    compile project(':atlas_core')
+//    //    bundleCompile project(':firstbundle')
+//    compile project(':firstbundle')
+//    compile project(':activitygroupcompat')
+//}
 //
 //String getEnvValue(key, defValue) {
 //    def val = System.getProperty(key);
@@ -96,9 +143,27 @@
 //    return defValue;
 //}
 //
-//tasks.whenTaskAdded {task ->
+//tasks.whenTaskAdded { task ->
 //    if (task.name.contains("DebugAndroidTest")) {
 //        task.setEnabled(false);
+//    }
+//    if (task.name.contains("assemble")) {
+//        def files = null;
+//        def file = new File(task.project.getBuildDir(), "outputs");
+//        if (file.exists() && new File(file, "tpatch-debug").exists()) {
+//            files = new File(file, "tpatch-debug").listFiles();
+//        }
+//        if (files != null) {
+//            for (File file1 : files) {
+//                if (file1.getName().endsWith(".json") || file1.getName().endsWith(".tpatch")) {
+//
+//                    if (!new File(task.project.getRootDir(), "hisTpatch").exists()) {
+//                        new File(task.project.getRootDir(), "hisTpatch").mkdirs();
+//                    }
+//                    org.apache.commons.io.FileUtils.copyFileToDirectory(file1, new File(task.project.getRootDir(), "hisTpatch"));
+//                }
+//            }
+//        }
 //    }
 //}
 //
@@ -119,6 +184,13 @@
 //        }
 //    }
 //}
+//
+//
+//
+//
+
+
+
 
 group = 'com.taobao.android.atlasdemo'
 version = getEnvValue("versionName", "1.0.0");
@@ -126,11 +198,11 @@ def apVersion = getEnvValue("apVersion", "");
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.taobao.atlas'
-apply plugin: 'com.taobao.atlas.dexpatch'
+//apply plugin: 'com.taobao.atlas.dexpatch'
 apply from: 'dexPatchWraper.gradle'
 
 //通过增加判断逻辑，打出不同类型的定制包
-def appId = "com.unit.test.myatlastest"
+def appId = "com.taobao.demo"
 def minVersion = 14
 if (project.hasProperty("beta")) {
     appId = "com.taobao.atlas.beta"
@@ -142,13 +214,23 @@ repositories {
     jcenter()
 }
 
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+    }
+}
+
+
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId appId
         minSdkVersion minVersion
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName version
         vectorDrawables.useSupportLibrary = true
@@ -158,10 +240,29 @@ android {
         }else{
             buildConfigField "boolean", "API_ENV", "false"
         }
+        multiDexEnabled = false
+
+    }
+    flavorDimensions 'api'
+    productFlavors{
+        productA{
+            applicationId "com.crazyman.product.a"
+            versionName "version-a-1.0"
+        }
+
+        productB{
+            applicationId "com.crazyman.product.b"
+            versionName "version-b-1.0"
+        }
     }
 
     dataBinding {
         enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
 
@@ -178,11 +279,6 @@ android {
         }
     }
 
-    packagingOptions {
-        doNotStrip '*/mips/*.so'
-        doNotStrip '*/mips64/*.so'
-    }
-
     //    productFlavors {
     //        dev {
     //            minSdkVersion 14
@@ -195,13 +291,14 @@ android {
 }
 
 atlas {
-
+    instantAppEnabled true
     atlasEnabled true
     tBuildConfig {
         autoStartBundles = ['com.taobao.firstbundle'] //自启动bundle配置
         outOfApkBundles = ['remotebundle']
         preLaunch = 'com.unit.test.myatlastest.DemoPreLaunch'
         classInject false
+        aaptConstantId true
         dataBindingBundles = ['com.taobao.databindbundle']
     }
 
@@ -229,29 +326,32 @@ atlas {
 
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile(rootProject.ext.lib_atlas_core) {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile('com.taobao.android:atlas_core:5.0.8.1-rc1@aar') {
 
         transitive = true
     }
-    //    compile project(':middlewarelibrary')
-    //    compile project(':splashscreen')
-    //    compile project(':activitygroupcompat')
-    //    bundleCompile project(':secondbundle')
-    //    bundleCompile project(':remotebundle')
-    //    bundleCompile project(':publicbundle')
-    //    bundleCompile project(':databindbundle')
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support:support-vector-drawable:25.1.0'
-    compile 'com.android.support:support-v4:25.1.0'
-    compile rootProject.ext.lib_atlas_update
-    compile 'com.alibaba:fastjson:1.1.45.android@jar'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
-    compile 'com.android.support:recyclerview-v7:25.1.0'
-    //    compile project(':atlas_core')
-    //    bundleCompile project(':firstbundle')
-    compile project(':firstbundle')
+    implementation 'com.taobao.android:atlasupdate:1.1.4.11@aar'
+
+//    implementation project(path:':middlewarelibrary',configuration: "compileProject")
+//    implementation project(path:':splashscreen',configuration: "compileProject")
+//    implementation project(path:':databindinglibrary',configuration: "compileProject")
+//    implementation project(path:':activitygroupcompat',configuration: "compileProject")
+//    bundleCompile project(':firstbundle')
+//    bundleCompile project(':secondbundle')
+//    bundleCompile project(path:':remotebundle',configuration: "compileProject")
+//    bundleCompile project(path:':publicbundle',configuration: "compileProject")
+//    bundleCompile project(path:':databindbundle',configuration: "compileProject")
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:support-vector-drawable:26.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
+
+    implementation 'com.alibaba:fastjson:1.1.45.android@jar'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
+    implementation 'com.android.support:recyclerview-v7:26.0.0'
+        compile project(':firstbundle')
     compile project(':activitygroupcompat')
 }
 
@@ -303,9 +403,10 @@ publishing {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifact "${project.buildDir}/outputs/apk/${project.name}-debug.ap"
+            artifact "${project.buildDir}/outputs/apk/debug/${project.name}-debug.ap"
             artifactId "AP-debug"
         }
     }
 }
+
 
