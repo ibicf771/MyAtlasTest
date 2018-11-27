@@ -1,12 +1,14 @@
 package com.unit.test.myatlastest;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.taobao.android.ActivityGroupDelegate;
+import com.unit.test.myatlastest.update.Updater;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityGroupDelegate mActivityDelegate;
@@ -20,13 +22,24 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent();
-//                intent.setClassName(MainActivity.this, "com.unit.test.firstbundle.FirstBundleActivity");
-////                intent.setClassName(MainActivity.this, "com.unit.test.myatlastest.MainActivity");
-//                startActivity(intent);
-
-
                 switchToActivity("home", "com.unit.test.firstbundle.FirstBundleActivity");
+            }
+        });
+        findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        Updater.update(getBaseContext());
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                    }
+                }.execute();
             }
         });
     }
