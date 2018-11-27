@@ -1,1 +1,1 @@
-include ':app', ':firstbundle',":activitygroupcompat",":secondbundlelibrary"
+include ':app', ':firstbundle',":activitygroupcompat"

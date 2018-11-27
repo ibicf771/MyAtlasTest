@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.taobao.secondbundlelibrary.SecondbundleShareActivity;
 
 /**
  * Created by yangsimin on 2018/11/26.

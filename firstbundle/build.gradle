@@ -48,6 +48,5 @@ dependencies {
     providedCompile 'com.android.support:appcompat-v7:26.1.0'
     providedCompile rootProject.ext.lib_atlas_core
     providedCompile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
-    compile project(":secondbundlelibrary");
 
 }
