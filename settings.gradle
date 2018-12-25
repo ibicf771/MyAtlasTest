@@ -1,1 +1,1 @@
-include ':app', ':firstbundle',":activitygroupcompat"
+include ':app', ':firstbundle',":activitygroupcompat",":atlas-core"

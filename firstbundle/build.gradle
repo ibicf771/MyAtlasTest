@@ -16,11 +16,11 @@ version = '1.0.1'
 
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '26.0.2'
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0.0"
 
@@ -44,8 +44,8 @@ dependencies {
 //    providedCompile project(':publicbundle')
 
     compile 'com.android.support.constraint:constraint-layout:1.0.0'
-    providedCompile 'com.android.support:support-v4:26.1.0'
-    providedCompile 'com.android.support:appcompat-v7:26.1.0'
+    providedCompile 'com.android.support:support-v4:27.1.0'
+    providedCompile 'com.android.support:appcompat-v7:27.1.0'
     providedCompile rootProject.ext.lib_atlas_core
     providedCompile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
 
