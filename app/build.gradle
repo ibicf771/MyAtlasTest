@@ -1,5 +1,5 @@
 group = 'com.taobao.android.atlasdemo'
-version = getEnvValue("versionName", "1.0.1");
+version = getEnvValue("versionName", "1.0.0");
 def apVersion = getEnvValue("apVersion", "");
 
 apply plugin: 'com.android.application'
