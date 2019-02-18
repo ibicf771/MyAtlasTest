@@ -50,6 +50,9 @@ atlas {
         debug {
             baseApFile project.rootProject.file('app/build/outputs/apk/app-debug.ap')
         }
+        release {
+            baseApFile project.rootProject.file('app/build/outputs/apk/app-release.ap')
+        }
     }
 }
 group = 'com.atlas.demo'

@@ -21,6 +21,14 @@ repositories {
 }
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'key0'
+            keyPassword '123456'
+            storeFile file('/Users/yangsimin/Documents/code/MyAtlasTest2/atlastest.jks')
+            storePassword '123456'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion '25.0.0'
     defaultConfig {
@@ -33,39 +41,37 @@ android {
         //通过增加判断逻辑，打出不同类型的定制包
         if (project.hasProperty("beta")) {
             buildConfigField "boolean", "API_ENV", "false"
-        }else{
+        } else {
             buildConfigField "boolean", "API_ENV", "false"
         }
     }
-
     dataBinding {
         enabled = true
     }
-
-
     buildTypes {
         release {
+            ndk {
+                abiFilters "x86", "armeabi"
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         debug {
             ndk {
-                abiFilters "x86","armeabi"
+                abiFilters "x86", "armeabi"
             }
-
+            signingConfig signingConfigs.config
         }
     }
-
     packagingOptions {
         doNotStrip '*/mips/*.so'
         doNotStrip '*/mips64/*.so'
     }
-
     //    productFlavors {
     //        dev {
     //            minSdkVersion 14
     //        }
-
     //        beta {
     //            minSdkVersion 21
     //        }
@@ -120,7 +126,6 @@ dependencies {
     //    bundleCompile project(':firstbundle')
     compile project(':firstbundle')
     compile project(':activitygroupcompat')
-
     //依赖atlas-core引擎代码组件
     compile 'com.taobao.android:atlas_core:5.0.7.55@aar'
     //依赖atlas-update更新代码组件
@@ -174,8 +179,13 @@ publishing {
 
 publishing {
     publications {
+//        maven(MavenPublication) {
+//            artifact "${project.buildDir}/outputs/apk/${project.name}-debug.ap"
+//            artifactId "AP-debug"
+//        }
+
         maven(MavenPublication) {
-            artifact "${project.buildDir}/outputs/apk/${project.name}-debug.ap"
+            artifact "${project.buildDir}/outputs/apk/${project.name}-release.ap"
             artifactId "AP-debug"
         }
     }
