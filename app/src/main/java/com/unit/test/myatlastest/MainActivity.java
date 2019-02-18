@@ -30,7 +30,11 @@ public class MainActivity extends AppCompatActivity {
 //                startActivity(intent);
 
 
-                switchToActivity("home", "com.unit.test.firstbundle.FirstBundleActivity");
+//                switchToActivity("home", "com.unit.test.firstbundle.FirstBundleActivity");
+
+                Intent intent = new Intent();
+                intent.setClassName(MainActivity.this, "com.unit.test.firstbundle.FirstBundleActivity");
+                startActivity(intent);
             }
         });
 
@@ -57,5 +61,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setClassName(getBaseContext(), activityName);
         mActivityDelegate.startChildActivity(mActivityGroupContainer, key, intent);
+
+
     }
 }
