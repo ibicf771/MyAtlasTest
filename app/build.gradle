@@ -4,7 +4,7 @@ def apVersion = getEnvValue("apVersion", "");
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.taobao.atlas'
-apply plugin: 'com.taobao.atlas.dexpatch'
+//apply plugin: 'com.taobao.atlas.dexpatch'
 apply from: 'dexPatchWraper.gradle'
 
 //通过增加判断逻辑，打出不同类型的定制包
@@ -38,8 +38,16 @@ android {
         }
     }
 
+    aaptOptions{cruncherEnabled =false
+
+        useNewCruncher =false}
+
     dataBinding {
         enabled = true
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
 
@@ -119,7 +127,7 @@ dependencies {
     //    compile project(':atlas_core')
     //    bundleCompile project(':firstbundle')
     compile project(':firstbundle')
-    compile project(':activitygroupcompat')
+    compileProject project(':activitygroupcompat')
 
     //依赖atlas-core引擎代码组件
     compile 'com.taobao.android:atlas_core:5.0.7.55@aar'
